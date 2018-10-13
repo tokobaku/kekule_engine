@@ -1,4 +1,6 @@
 #pragma once
+
+#include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <string>
 
@@ -6,27 +8,37 @@ namespace kekule {
 
 	class Window {
 	private:
-		static int mWidth, mHeight, mXpos, mYpos;
-		static int mExitCode;
-		static char* mTitle;
 		static GLFWwindow* mWindow;
+		static int mWidth, mHeight, mPosX, mPosY;
+		static std::string mTitle;
+		static int mExitCode;
 		static void (*mOnLoad)();
 		static void (*mOnUpdate)(float dt);
 		static void (*mOnDraw)();
-		static void (*mOnQuit)(int exitcode);
-		//TODO: add icon and more features (wrap almost whole glfw API)
+		static void (*mOnQuit)(int code);
+		//TODO: add icon
 	public:
-		static void init (int width = 640, int height = 480, const char* title = "kekule_engine");
-		static void init (int width, int height, const char* title, int xpos, int ypos);
-		static void start ();
-		static void terminate ();
+		static void init (int width = 640, int height = 480, const std::string& title = "kekule_engine");
+		static void init (int width, int height, const std::string& title, int xpos, int ypos);
 
-		static void quit (const int& exitcode);
+		static void start ();
+		static void exit (int code = 0);
+		static int exitCode ();
+
+		static int width ();
+		static int height ();
+		static int xPos ();
+		static int yPos ();
+		static std::string title();
+
+		static void resize (int width, int height);
+		static void setPos (int xpos, int ypos);
+		static void setTitle (const std::string& title);
 
 		static void setOnLoad (void (*onLoad)());
 		static void setOnUpdate (void (*onUpdate)(float dt));
 		static void setOnDraw (void (*onDraw)());
-		static void setOnQuit (void (*onQuit)(int exitcode));
+		static void setOnQuit (void (*onQuit)(int code));
 	};
-	
+
 }

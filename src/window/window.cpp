@@ -1,92 +1,138 @@
 #define GLEW_STATIC
-#include <GL/glew.h>
 #include "window.h"
-#include <stdlib.h>
-#include <cstdio>
-#include <cstring>
+#include "input.h"
+#include "logging.h"
 
 namespace kekule {
 
-	int Window::mWidth, Window::mHeight, Window::mXpos, Window::mYpos;
-	int Window::mExitCode;
-	char* Window::mTitle;
 	GLFWwindow* Window::mWindow;
+	int Window::mWidth, Window::mHeight, Window::mPosX, Window::mPosY;
+	std::string Window::mTitle;
+	int Window::mExitCode;
 	void (*Window::mOnLoad)();
 	void (*Window::mOnUpdate)(float dt);
 	void (*Window::mOnDraw)();
-	void (*Window::mOnQuit)(int exitcode);
+	void (*Window::mOnQuit)(int code);
 
-	//by default width = 640, height = 480, title = "kekule_engine"
-	void Window::init (int width, int height, const char* title) {
+	void Window::init (int width, int height, const std::string& title) {
+		mExitCode = 0;
 		if (glfwInit() != GLFW_TRUE) {
-			printf("[GLFW] failed to initialize GLFW\n");
+			logError("[GLFW] failed to initialize GLFW");
 			getchar();
-			exit(1);
+			Window::exit(1);
 		}
 
-		mWindow = glfwCreateWindow(width, height, title, nullptr, nullptr);
+		mWindow = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
 		glfwMakeContextCurrent(mWindow);
 
 		if (glewInit() != GLEW_OK) {
-			printf("[GLEW] failed to initialize GLEW\n");
+			logError("[GLEW] failed to initialize GLEW");
 			getchar();
-			exit(1);
+			Window::exit(1);
 		}
-		mWidth = width;
-		mHeight = height;
-		int titlesize = 0;
-		while (title[titlesize++]);	//count characters in title including \0
-		mTitle = new char[titlesize];
-		memcpy(mTitle, title, titlesize * sizeof(char));
+
+		glfwSetKeyCallback(mWindow, Input::glfw_key_callback);
+		glfwSetMouseButtonCallback(mWindow, Input::glfw_mouse_btn_callback);
+		glfwSetCursorPosCallback(mWindow, Input::glfw_mouse_pos_callback);
+		glfwSetScrollCallback(mWindow, Input::glfw_mouse_scroll_callback);
 	}
 
-	void Window::init (int width, int height, const char* title, int xpos, int ypos) {
+	void Window::init (int width, int height, const std::string& title, int xpos, int ypos) {
 		init(width, height, title);
-		glfwSetWindowPos(mWindow, xpos, ypos);
+		Window::setPos(xpos, ypos);
 	}
 
 	void Window::start () {
-		if (*mOnLoad != nullptr)
+		Input::init();
+
+		if (mOnLoad != nullptr)
 			mOnLoad();
-		
-		float startTime = 0.0f;
-		float endTime = 0.0f;
+
+		float lastFrame = 0.0f;
 		float dt = 0.0f;
 		while (!glfwWindowShouldClose(mWindow)) {
-			//update deltatime
-			dt = endTime - startTime;
-			startTime = glfwGetTime();
+			dt = glfwGetTime() - lastFrame;
+			lastFrame = glfwGetTime();
 
+			//Logic
 			if (*mOnUpdate != nullptr)
 				mOnUpdate(dt);
 
-			//render
-			glClear(GL_COLOR_BUFFER_BIT);
+			//Render
 
 			if (*mOnDraw != nullptr)
 				mOnDraw();
 
-			//swap buffers and poll events
 			glfwSwapBuffers(mWindow);
 			glfwPollEvents();
-			endTime = glfwGetTime();
+
+			Input::mDealWithPressedBtns();
+			Input::mDealWithReleasedBtns();
+			Input::mDealWithReleasedKeys();
 		}
 	}
 
-	void Window::terminate () {
-		if (*mOnQuit != nullptr)
-			mOnQuit(mExitCode);
-		glfwTerminate();
+	int Window::exitCode () {
+		return mExitCode;
 	}
 
-	void Window::quit (const int& exitcode) {
+	void Window::exit (int code) {
+		mExitCode = code;
 		glfwSetWindowShouldClose(mWindow, GLFW_TRUE);
-		mExitCode = exitcode;
 	}
 
-	void Window::setOnLoad (void (*onLoad)()) { mOnLoad = onLoad; }
-	void Window::setOnUpdate (void (*onUpdate)(float dt)) { mOnUpdate = onUpdate; }
-	void Window::setOnDraw (void (*onDraw)()) { mOnDraw = onDraw; }
-	void Window::setOnQuit (void (*onQuit)(int exitcode)) { mOnQuit = onQuit; }
+	int Window::width () {
+		return mWidth;
+	}
 
+	int Window::height () {
+		return mHeight;
+	}
+
+	int Window::xPos () {
+		return mPosX;
+	}
+
+	int Window::yPos () {
+		return mPosY;
+	}
+
+	std::string Window::title () {
+		return mTitle;
+	}
+
+	void Window::resize (int width, int height) {
+		mWidth = width;
+		mHeight = height;
+		glfwSetWindowSize(mWindow, width, height);
+		glViewport(0, 0, width, height);
+		//TODO: update projection matrix
+	}
+
+	void Window::setPos (int xpos, int ypos) {
+		mPosX = xpos;
+		mPosY = ypos;
+		glfwSetWindowPos(mWindow, xpos, ypos);
+	}
+
+	void Window::setTitle (const std::string& title) {
+		mTitle = title;
+		glfwSetWindowTitle(mWindow, mTitle.c_str());
+	}
+
+	void Window::setOnLoad (void (*onLoad)()) {
+		mOnLoad = onLoad;
+	}
+
+	void Window::setOnUpdate (void (*onUpdate)(float dt)) {
+		mOnUpdate = onUpdate;
+	}
+
+	void Window::setOnDraw (void (*onDraw)()) {
+		mOnDraw = onDraw;
+	}
+
+	void Window::setOnQuit (void (*onQuit)(int code)) {
+		mOnQuit = onQuit;
+	}
 }
