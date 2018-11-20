@@ -93,6 +93,16 @@ namespace kekule {
 	typedef vector4<char>			cvec4;
 	typedef vector4<unsigned char>	ucvec4;
 
+	struct Color : public ucvec4 {
+		inline Color () : ucvec4() {}
+		inline Color (const unsigned char& rgb, const unsigned char& a = 255) : ucvec4(rgb, rgb, rgb, a) {}
+		inline Color (const unsigned char& r, const unsigned char& g, const unsigned char& b
+					,const unsigned char& a = 255) : ucvec4(r, g, b, a) {}
+		inline Color (const Color& other) : ucvec4(other.r, other.g, other.b, other.a) {}
+
+		inline vec4 toVec4 () const { return vec4(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f); }
+	};
+
 }
 
 #include "vec4.hpp"
