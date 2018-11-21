@@ -315,7 +315,14 @@ namespace kekule {
 	bool VertexArray::operator!= (const nullptr_t& ptr) const { return mRef != ptr; }
 	VertexArray::operator bool () const { return mRef != nullptr; }
 
-	void VertexArray::bind () const { GL(glBindVertexArray(mRef == nullptr ? 0 : mRef->id)); }
+	void VertexArray::bind () const {
+		if (mRef == nullptr) {
+			mRef = new vertex_array();
+			GL(glGenVertexArrays(1, &mRef->id));
+		}
+		GL(glBindVertexArray(mRef->id));
+	}
+
 	void VertexArray::unbind () const { GL(glBindVertexArray(0)); }
 
 	void VertexArray::specifyLayout (const int& index, const int& size, const int& stride, const int& offset) const {

@@ -12,38 +12,43 @@
 
 namespace kekule {
 
+	template <typename T>
+	inline T clamp (const T& min, const T& max, const T& value) {
+		return value < min ? min : (value > max ? max : value);
+	}
+
 	template <typename T, typename N>
-	T lerp (const T& a, const T& b, const N& scalar) {
+	inline T lerp (const T& a, const T& b, const N& scalar) {
 		return a + (b - a) * scalar;
 	}
 
 	template <typename T, typename N>
-	T smooth (const T& a, const T& b, const N& scalar) {
+	inline T smooth (const T& a, const T& b, const N& scalar) {
 		return a + (b - a) * scalar * scalar * (3 - 2 * scalar);
 	}
 
 	template <typename T>
-	T dot (const vector2<T>& u, const vector2<T>& v) {
+	inline T dot (const vector2<T>& u, const vector2<T>& v) {
 		return u.dot(v);
 	}
 
 	template <typename T>
-	T dot (const vector3<T>& u, const vector3<T>& v) {
+	inline T dot (const vector3<T>& u, const vector3<T>& v) {
 		return u.dot(v);
 	}
 
 	template <typename T>
-	vector3<T> cross (const vector3<T>& u, const vector3<T>& v) {
+	inline vector3<T> cross (const vector3<T>& u, const vector3<T>& v) {
 		return u.cross(v);
 	}
 
 	template <typename T>
-	float length (const vector2<T>& v) {
+	inline float length (const vector2<T>& v) {
 		return sqrtf(v.x * v.x + v.y * v.y);
 	}
 
 	template <typename T>
-	float sqlength (const vector2<T>& v) {
+	inline float sqlength (const vector2<T>& v) {
 		return v.x * v.x + v.y * v.y;
 	}
 

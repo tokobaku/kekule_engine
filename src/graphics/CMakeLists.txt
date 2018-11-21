@@ -1,1 +1,1 @@
-add_library(graphics shader.cpp buffer_objects.cpp renderable.cpp graphics.cpp)
+add_library(graphics shader.cpp buffer_objects.cpp renderable.cpp graphics.cpp renderer.cpp)

@@ -208,6 +208,9 @@ namespace kekule {
 		//returns true if key is released
 		friend bool keyIsUp (const unsigned short& key);
 
+		//return true if key is pressed
+		friend bool keyIsDown (const unsigned short& key);
+
 		//returns true if the state of mouse button has been chaenged to "pressed" during current loop
 		friend bool getMouseDown (const unsigned short& btn);
 
@@ -219,6 +222,9 @@ namespace kekule {
 
 		//return true if mouse button is up
 		friend bool mouseIsUp (const unsigned short& btn);
+
+		//return true if mouse button is pressed
+		friend bool mouseIsDown (const unsigned short& btn);
 		
 		//returns mouseX position
 		friend float mouseX ();
@@ -241,10 +247,12 @@ namespace kekule {
 	bool getKeyUp (const unsigned short& key);
 	bool getKey (const unsigned short& key);
 	bool keyIsUp (const unsigned short& key);
+	bool keyIsDown (const unsigned short& key);
 	bool getMouseDown (const unsigned short& btn);
 	bool getMouse (const unsigned short& btn);
 	bool getMouseUp (const unsigned short& btn);
 	bool mouseIsUp (const unsigned short& btn);
+	bool mouseIsDown (const unsigned short& btn);
 	float mouseX ();
 	float mouseY ();
 	vec2 mousePos ();

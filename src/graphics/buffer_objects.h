@@ -5,7 +5,7 @@
 namespace kekule {
 
 	class VertexBuffer {
-	private:
+	public:
 		class vertex_buffer {
 		public:
 			uint id, vertSize, vertCount;
@@ -93,6 +93,7 @@ namespace kekule {
 	};
 
 	class VertexArray {
+	public:
 		class vertex_array {
 		public:
 			uint id;

@@ -36,6 +36,10 @@ namespace kekule {
 		return Input::mKeyboard[key] == INPUT_KEY_NOT_IN_ACTION;
 	}
 
+	bool keyIsDown (const unsigned short& key) {
+		return Input::mKeyboard[key] != INPUT_KEY_NOT_IN_ACTION;
+	}
+
 	bool getMouseDown (const unsigned short& btn) {
 		return Input::mMouseBtn[btn] == INPUT_PRESSED;
 	}
@@ -50,6 +54,10 @@ namespace kekule {
 
 	bool mouseIsUp (const unsigned short& btn) {
 		return Input::mMouseBtn[btn] == INPUT_KEY_NOT_IN_ACTION;
+	}
+
+	bool mouseIsDown (const unsigned short& btn) {
+		return Input::mMouseBtn[btn] != INPUT_KEY_NOT_IN_ACTION;
 	}
 
 	float mouseX () { return Input::mMouseX; }

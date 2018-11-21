@@ -9,30 +9,29 @@
 #include "graphics/buffer_objects.h"
 #include "graphics/renderable.h"
 #include "graphics/graphics.h"
+#include "graphics/renderable.h"
 
 using namespace kekule;
 
-Shader s;
-VertexBuffer vbo;
-IndexBuffer ibo;
-VertexArray vao;
 Line l;
+Line l1;
+Triangle t;
 
 int main () {
 	Window::init();
-	s = Shader("../src/graphics/shaders/simple.vert", "../src/graphics/shaders/simple.frag", "simple");
-	s.bind();
-	vbo = VertexBuffer(2, {-0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f, 0.5f, -0.5f});
-	ibo = IndexBuffer({0, 1, 2, 0, 2, 3});
-	vao.bind();
-	vao.specifyLayout(0, 2, 2, 0);
-	vao.unbind();
-	l = Line(vec2(-0.5f), vec2(0.5f), Color(255));
+	l = Line(vec2(-0.5f, -0.5f), vec2(0.5f, 0.5f), Color(255, 0, 255));
+	l1 = Line(vec2(0.5f, -0.5f), vec2(-0.5f, 0.5f), Color(255, 0, 0));
+	l1.layer = 1;
+	t = Triangle(vec2(-0.5f), vec2(0.0f, 0.5f), vec2(0.5f, -0.5f), Color(255, 128, 0));
 
 	Window::setOnDraw([]() {
 		l.render();
-		//vao.bind();
-		//glDrawElements(GL_TRIANGLES, ibo.indCount(), GL_UNSIGNED_INT, 0);
+		l1.render();
+		t.render();
+		if (getMouseDown(INPUT_MOUSE_1))
+			l.layer = 1;
+		else if (getMouseDown(INPUT_MOUSE_2))
+			l.layer = -1;
 		if (getKey(INPUT_ESCAPE))
 			Window::exit();
 	});

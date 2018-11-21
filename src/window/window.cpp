@@ -2,6 +2,7 @@
 #include "window.h"
 #include "input.h"
 #include "logging.h"
+#include "../graphics/renderer.h"
 
 namespace kekule {
 
@@ -59,9 +60,11 @@ namespace kekule {
 				mOnUpdate(dt);
 
 			//Render
-
+			GL(glClear(GL_COLOR_BUFFER_BIT));
 			if (*mOnDraw != nullptr)
 				mOnDraw();
+			
+			Renderer::render();
 
 			glfwSwapBuffers(mWindow);
 			glfwPollEvents();
