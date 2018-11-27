@@ -9,7 +9,8 @@ namespace kekule {
 	Shader Shader::simple () {
 		if (mSimple)
 			return mSimple;
-		return mSimple = Shader("../src/graphics/shaders/simple.vert", "../src/graphics/shaders/simple.frag", "simple");
+		mSimple = Shader("../src/graphics/shaders/simple.vert", "../src/graphics/shaders/simple.frag", "simple");
+		return mSimple;
 	}
 
 	uint Shader::createShader (const char* src, const char* name, const uint& type) {

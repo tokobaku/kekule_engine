@@ -10,30 +10,28 @@
 #include "graphics/renderable.h"
 #include "graphics/graphics.h"
 #include "graphics/renderable.h"
+#include "graphics/camera.h"
 
 using namespace kekule;
 
-Line l;
-Line l1;
-Triangle t;
-
 int main () {
 	Window::init();
-	l = Line(vec2(-0.5f, -0.5f), vec2(0.5f, 0.5f), Color(255, 0, 255));
-	l1 = Line(vec2(0.5f, -0.5f), vec2(-0.5f, 0.5f), Color(255, 0, 0));
-	l1.layer = 1;
-	t = Triangle(vec2(-0.5f), vec2(0.0f, 0.5f), vec2(0.5f, -0.5f), Color(255, 128, 0));
-
 	Window::setOnDraw([]() {
-		l.render();
-		l1.render();
-		t.render();
-		if (getMouseDown(INPUT_MOUSE_1))
-			l.layer = 1;
-		else if (getMouseDown(INPUT_MOUSE_2))
-			l.layer = -1;
+		q.render();
 		if (getKey(INPUT_ESCAPE))
 			Window::exit();
+	});
+	Window::setOnUpdate([](float dt) {
+		q.angle += dt * 100.0f;
+		static float t = 0.0f;
+		static int frames = 0;
+		t += dt;
+		frames++;
+		if (t >= 1.0f) {
+			logInfo(frames);
+			t = 0.0f;
+			frames = 0;
+		}
 	});
 	Window::start();
 	return Window::exitCode();

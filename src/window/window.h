@@ -2,6 +2,7 @@
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include "../maths/kmath.h"
 #include <string>
 
 namespace kekule {
@@ -11,6 +12,7 @@ namespace kekule {
 		static GLFWwindow* mWindow;
 		static int mWidth, mHeight, mPosX, mPosY;
 		static std::string mTitle;
+		static mat4 mProj;
 		static int mExitCode;
 		static void (*mOnLoad)();
 		static void (*mOnUpdate)(float dt);
@@ -30,6 +32,7 @@ namespace kekule {
 		static int xPos ();
 		static int yPos ();
 		static std::string title();
+		static mat4 projMat ();
 
 		static void resize (int width, int height);
 		static void setPos (int xpos, int ypos);
