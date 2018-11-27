@@ -1,299 +1,335 @@
 #pragma once
 
-#include <math.h>
+#include "math.h"
+#include "string.h"
 
 namespace kekule {
 
 	inline mat4::mat4 () {}
 
 	inline mat4::mat4 (const float& diagonal) {
-		columns[0] = { diagonal,	0.0f,		0.0f,		0.0f };
-		columns[1] = { 0.0f,		diagonal,	0.0f,		0.0f };
-		columns[2] = { 0.0f,		0.0f,		diagonal,	0.0f };
-		columns[3] = { 0.0f,		0.0f,		0.0f,		diagonal };
+		columns[0] = {diagonal, 0.0f, 0.0f, 0.0f};
+		columns[1] = {0.0f, diagonal, 0.0f, 0.0f};
+		columns[2] = {0.0f, 0.0f, diagonal, 0.0f};
+		columns[3] = {0.0f, 0.0f, 0.0f, diagonal};
 	}
 
-	inline mat4::mat4 (const float* elements) {
-		memcpy (this->elements, elements, sizeof(float) * MAT4_ELEMENT_COUNT);
-	}
-
-	inline mat4::mat4 (const vec4* columns) {
-		memcpy (this->columns, columns, sizeof(vec4) * MAT4_DIMENSION);
-	}
-
-	inline mat4::mat4 (const vec4& c1, const vec4& c2, const vec4& c3, const vec4& c4) {
-		this->columns[0] = c1;
-		this->columns[1] = c2;
-		this->columns[2] = c3;
-		this->columns[3] = c4;
+	inline mat4::mat4 (const void* data) {
+		memcpy(elements, data, sizeof(float) * MAT4_ELEMENT_COUNT);
 	}
 
 	inline mat4::mat4 (const mat4& other) {
-		memcpy(this->elements, other.elements, sizeof(float) * MAT4_ELEMENT_COUNT);
+		memcpy(elements, other.elements, sizeof(float) * MAT4_ELEMENT_COUNT);
 	}
 
 	inline mat4::~mat4 () {}
 
-	inline mat4 mat4::operator+ (const mat4& other) const {
-		mat4 result;
-		for (unsigned char i = 0; i < MAT4_DIMENSION; i++)
-			result[i] = this->columns[i] + other.columns[i];
-		return result;
+	inline mat4& mat4::operator+= (const mat4& other) {
+		for (int i = 0; i < MAT4_ELEMENT_COUNT; i++)
+			elements[i] += other.elements[i];
+		return *this;
 	}
 
-	inline mat4& mat4::operator+= (const mat4& other) {
-		for (unsigned char i = 0; i < MAT4_DIMENSION; i++)
-			(*this)[i] += other.columns[i];
+	inline mat4 mat4::operator+ (const mat4& other) const {
+		mat4 result = *this;
+		return result += other;
+	}
+
+	inline mat4& mat4::operator+= (const float& scalar) {
+		for (int i = 0; i < MAT4_ELEMENT_COUNT; i++)
+			elements[i] += scalar;
 		return *this;
 	}
 
 	inline mat4 mat4::operator+ (const float& scalar) const {
-		mat4 result;
-		for (unsigned char i = 0; i < MAT4_DIMENSION; i++)
-			result[i] = this->columns[i] + scalar;
-		return result;
+		mat4 result = *this;
+		return result += scalar;
 	}
 
-	inline mat4& mat4::operator+= (const float& scalar) {
-		for (unsigned char i = 0; i < MAT4_DIMENSION; i++)
-			(*this)[i] += scalar;
+	inline mat4& mat4::operator-= (const mat4& other) {
+		for (int i = 0; i < MAT4_ELEMENT_COUNT; ++i)
+			elements[i] -= other.elements[i];
 		return *this;
 	}
 
 	inline mat4 mat4::operator- (const mat4& other) const {
-		mat4 result;
-		for (unsigned char i = 0; i < MAT4_DIMENSION; i++)
-			result[i] = this->columns[i] - other.columns[i];
-		return result;
+		mat4 result = *this;
+		return result -= other;
 	}
 
-	inline mat4& mat4::operator-= (const mat4& other) {
-		for (unsigned char i = 0; i < MAT4_DIMENSION; i++)
-			(*this)[i] -= other.columns[i];
+	inline mat4& mat4::operator-= (const float& scalar) {
+		for (int i = 0; i < MAT4_ELEMENT_COUNT; --i)
+			elements[i] -= scalar;
 		return *this;
 	}
 
 	inline mat4 mat4::operator- (const float& scalar) const {
-		mat4 result;
-		for (unsigned char i = 0; i < MAT4_DIMENSION; i++)
-			result[i] = this->columns[i] - scalar;
-		return result;
-	}
-
-	inline mat4& mat4::operator-= (const float& scalar) {
-		for (unsigned char i = 0; i < MAT4_DIMENSION; i++)
-			(*this)[i] -= scalar;
-		return *this;
-	}
-
-	inline mat4 mat4::operator* (const mat4& other) const {
-		mat4 result;
-		for (unsigned char i = 0; i < MAT4_DIMENSION; i++)
-			for (unsigned char j = 0; j < MAT4_DIMENSION; j++)
-				result[j][i] = (this->row(i) * other.column(j)).sum();
+		mat4 result = *this;
+		result -= scalar;
 		return result;
 	}
 
 	inline mat4& mat4::operator*= (const mat4& other) {
-		for (unsigned char i = 0; i < MAT4_DIMENSION; i++)
-			for (unsigned char j = 0; j < MAT4_DIMENSION; j++)
-				(*this)[j][i] = (this->row(i) * other.column(j)).sum();
+		float data[16];
+		for (int y = 0; y < 4; y++)
+		{
+			for (int x = 0; x < 4; x++)
+			{
+				float sum = 0.0f;
+				for (int e = 0; e < 4; e++)
+				{
+					sum += elements[x + e * 4] * other.elements[e + y * 4];
+				}
+				data[x + y * 4] = sum;
+			}
+		}
+		memcpy(elements, data, 4 * 4 * sizeof(float));
+		return *this;
+	}
+
+	inline mat4 mat4::operator* (const mat4& other) const {
+		mat4 result = *this;
+		return result *= other;
+	}
+
+	inline mat4& mat4::operator*= (const float& scalar) {
+		for (int i = 0; i < MAT4_ELEMENT_COUNT; ++i)
+			elements[i] *= scalar;
 		return *this;
 	}
 
 	inline mat4 mat4::operator* (const float& scalar) const {
-		mat4 result;
-		for (unsigned char i = 0; i < MAT4_ELEMENT_COUNT; i++)
-			result.elements[i] *= scalar;
-		return result;
+		mat4 result = *this;
+		return result *= scalar;
 	}
 
-	inline mat4& mat4::operator*= (const float& scalar) {
-		for (unsigned char i = 0; i < MAT4_ELEMENT_COUNT; i++)
-			this->columns[i] *= scalar;
+	inline mat4& mat4::operator/= (const mat4& other) {
+		return *this *= other.inversed();
+	}
+
+	inline mat4 mat4::operator/ (const mat4& other) const {
+		mat4 result = *this;
+		return result /= other;
+	}
+
+	inline mat4& mat4::operator/= (const float& scalar) {
+		for (int i = 0; i < MAT4_ELEMENT_COUNT; ++i)
+			elements[i] /= scalar;
 		return *this;
 	}
 
-	inline vec4& mat4::operator[] (const unsigned int& index) {
-		return this->columns[index];
+	inline mat4 mat4::operator/ (const float& scalar) const {
+		mat4 result = *this;
+		return result /= scalar;
 	}
 
-	inline vec4 mat4::column (const unsigned int& index) const {
-		return this->columns[index];
-	}
-
-	inline vec4 mat4::row (const unsigned int& index) const {
-		return vec4 (
-			this->elements[0 * 4 + index],
-			this->elements[1 * 4 + index],
-			this->elements[2 * 4 + index],
-			this->elements[3 * 4 + index]
-		);
-	}
-
-	inline float mat4::at (const unsigned int& column, const unsigned int& row) const {
-		return this->elements[4 * column + row];
+	inline mat4 mat4::operator- () const {
+		return *this * -1.0f;
 	}
 
 	inline bool mat4::operator== (const mat4& other) const {
-		for (unsigned char i = 0; i < MAT4_ELEMENT_COUNT; i++)
-			if (this->elements[i] != other.elements[i])
+		for (int i = 0; i < MAT4_ELEMENT_COUNT; ++i)
+			if (elements[i] != other.elements[i])
 				return false;
 		return true;
 	}
 
 	inline bool mat4::operator!= (const mat4& other) const {
-		for (unsigned char i = 0; i < MAT4_ELEMENT_COUNT; i++)
-			if (this->elements[i] != other.elements[i])
-				return true;
-		return false;
+		return !(*this == other);
 	}
 
-	inline mat4& mat4::scale (const vec3& axis) {
-		mat4 result(1.0f);
-		result[0][0] = axis.x;
-		result[1][1] = axis.y;
-		result[2][2] = axis.z;
-		*this *= result;
-		return *this;
+	inline mat4& mat4::inverse () {
+		/* 99% code of this function (method) comes from glu library MESA implementation */
+		float* m = this->elements;
+    	float inv[16], det;
+    	int i;
+
+    	inv[0] = m[5]  * m[10] * m[15] - 
+    	         m[5]  * m[11] * m[14] - 
+    	         m[9]  * m[6]  * m[15] + 
+    	         m[9]  * m[7]  * m[14] +
+    	         m[13] * m[6]  * m[11] - 
+    	         m[13] * m[7]  * m[10];
+
+    	inv[4] = -m[4]  * m[10] * m[15] + 
+    	          m[4]  * m[11] * m[14] + 
+    	          m[8]  * m[6]  * m[15] - 
+    	          m[8]  * m[7]  * m[14] - 
+    	          m[12] * m[6]  * m[11] + 
+    	          m[12] * m[7]  * m[10];
+
+    	inv[8] = m[4]  * m[9] * m[15] - 
+    	         m[4]  * m[11] * m[13] - 
+    	         m[8]  * m[5] * m[15] + 
+    	         m[8]  * m[7] * m[13] + 
+    	         m[12] * m[5] * m[11] - 
+    	         m[12] * m[7] * m[9];
+
+    	inv[12] = -m[4]  * m[9] * m[14] + 
+    	           m[4]  * m[10] * m[13] +
+    	           m[8]  * m[5] * m[14] - 
+    	           m[8]  * m[6] * m[13] - 
+    	           m[12] * m[5] * m[10] + 
+    	           m[12] * m[6] * m[9];
+
+    	inv[1] = -m[1]  * m[10] * m[15] + 
+    	          m[1]  * m[11] * m[14] + 
+    	          m[9]  * m[2] * m[15] - 
+    	          m[9]  * m[3] * m[14] - 
+    	          m[13] * m[2] * m[11] + 
+    	          m[13] * m[3] * m[10];
+
+    	inv[5] = m[0]  * m[10] * m[15] - 
+    	         m[0]  * m[11] * m[14] - 
+    	         m[8]  * m[2] * m[15] + 
+    	         m[8]  * m[3] * m[14] + 
+    	         m[12] * m[2] * m[11] - 
+    	         m[12] * m[3] * m[10];
+
+    	inv[9] = -m[0]  * m[9] * m[15] + 
+    	          m[0]  * m[11] * m[13] + 
+    	          m[8]  * m[1] * m[15] - 
+    	          m[8]  * m[3] * m[13] - 
+    	          m[12] * m[1] * m[11] + 
+    	          m[12] * m[3] * m[9];
+
+    	inv[13] = m[0]  * m[9] * m[14] - 
+    	          m[0]  * m[10] * m[13] - 
+    	          m[8]  * m[1] * m[14] + 
+    	          m[8]  * m[2] * m[13] + 
+    	          m[12] * m[1] * m[10] - 
+    	          m[12] * m[2] * m[9];
+
+    	inv[2] = m[1]  * m[6] * m[15] - 
+    	         m[1]  * m[7] * m[14] - 
+    	         m[5]  * m[2] * m[15] + 
+    	         m[5]  * m[3] * m[14] + 
+    	         m[13] * m[2] * m[7] - 
+    	         m[13] * m[3] * m[6];
+
+    	inv[6] = -m[0]  * m[6] * m[15] + 
+    	          m[0]  * m[7] * m[14] + 
+    	          m[4]  * m[2] * m[15] - 
+    	          m[4]  * m[3] * m[14] - 
+    	          m[12] * m[2] * m[7] + 
+    	          m[12] * m[3] * m[6];
+
+    	inv[10] = m[0]  * m[5] * m[15] - 
+    	          m[0]  * m[7] * m[13] - 
+    	          m[4]  * m[1] * m[15] + 
+    	          m[4]  * m[3] * m[13] + 
+    	          m[12] * m[1] * m[7] - 
+    	          m[12] * m[3] * m[5];
+
+    	inv[14] = -m[0]  * m[5] * m[14] + 
+    	           m[0]  * m[6] * m[13] + 
+    	           m[4]  * m[1] * m[14] - 
+    	           m[4]  * m[2] * m[13] - 
+    	           m[12] * m[1] * m[6] + 
+    	           m[12] * m[2] * m[5];
+
+    	inv[3] = -m[1] * m[6] * m[11] + 
+    	          m[1] * m[7] * m[10] + 
+    	          m[5] * m[2] * m[11] - 
+    	          m[5] * m[3] * m[10] - 
+    	          m[9] * m[2] * m[7] + 
+    	          m[9] * m[3] * m[6];
+
+    	inv[7] = m[0] * m[6] * m[11] - 
+    	         m[0] * m[7] * m[10] - 
+    	         m[4] * m[2] * m[11] + 
+    	         m[4] * m[3] * m[10] + 
+    	         m[8] * m[2] * m[7] - 
+    	         m[8] * m[3] * m[6];
+
+    	inv[11] = -m[0] * m[5] * m[11] + 
+    	           m[0] * m[7] * m[9] + 
+    	           m[4] * m[1] * m[11] - 
+    	           m[4] * m[3] * m[9] - 
+    	           m[8] * m[1] * m[7] + 
+    	           m[8] * m[3] * m[5];
+
+    	inv[15] = m[0] * m[5] * m[10] - 
+    	          m[0] * m[6] * m[9] - 
+    	          m[4] * m[1] * m[10] + 
+    	          m[4] * m[2] * m[9] + 
+    	          m[8] * m[1] * m[6] - 
+    	          m[8] * m[2] * m[5];
+
+    	det = m[0] * inv[0] + m[1] * inv[4] + m[2] * inv[8] + m[3] * inv[12];
+
+    	if (det == 0)
+    	    return *this;
+
+    	det = 1.0 / det;
+
+    	for (i = 0; i < 16; i++)
+    	    this->elements[i] = inv[i] * det;
+
+    	return *this;
 	}
 
-	inline mat4 mat4::scalation (const vec3& axis) {
+	inline mat4 mat4::inversed () const {
+		mat4 result = *this;
+		return result.inverse();
+	}
+
+	inline mat4 mat4::ortho (float left, float right, float top, float bot, float zNear, float zFar) {
 		mat4 result(1.0f);
-		result[0][0] = axis.x;
-		result[1][1] = axis.y;
-		result[2][2] = axis.z;
+		result.elements[0] = 2.0f / (right - left);
+		result.elements[5] = 2.0f / (top - bot);
+		result.elements[10] = 2.0f / (zNear - zFar);
+		result.elements[12] = (right + left) / (left - right);
+		result.elements[13] = (top + bot) / (bot - top);
+		result.elements[14] = (zFar + zNear) / (zNear - zFar);
 		return result;
 	}
 
-	inline mat4& mat4::translate (const vec3& v) {
+	inline mat4 mat4::translation (const vec2& p) {
 		mat4 result(1.0f);
-		result[3][0] = v.x;
-		result[3][1] = v.y;
-		result[3][3] = v.z;
-		*this *= result;
-		return *this;
-	}
-
-	inline mat4 mat4::translation (const vec3& v) {
-		mat4 result(1.0f);
-		result[3][0] = v.x;
-		result[3][1] = v.y;
-		result[3][3] = v.z;
+		result.elements[12] = p.x;
+		result.elements[13] = p.y;
 		return result;
 	}
 
-	inline mat4& mat4::rotate (const float& angle, vec3 axis, const bool& normalized) {
-		mat4 result(1.0f);
-
+	inline mat4 mat4::rotation (const float& angle) {
 		float c = cosf(angle * DEG_TO_RAD);
 		float s = sinf(angle * DEG_TO_RAD);
-		float omc = 1 - c;
 
-		if (!normalized)
-			axis.normalize();
+		mat4 result(1.0f);
+		result.elements[0] = c;
+		result.elements[1] = -s;
+		result.elements[4] = s;
+		result.elements[5] = c;
 
-		result[0][0] = c + axis.x * axis.x * omc;
-		result[0][1] = axis.y * axis.x * omc + axis.z * s;
-		result[0][2] = axis.z * axis.x * omc - axis.y * s;
-
-		result[1][0] = axis.x * axis.y * omc - axis.z * s;
-		result[1][1] = c + axis.y * axis.y * omc;
-		result[1][2] = axis.z * axis.y * omc + axis.x * s;
-
-		result[2][0] = axis.x * axis.z * omc + axis.y * s;
-		result[2][1] = axis.y * axis.z * omc - axis.x * s;
-		result[2][2] = c + axis.z * axis.z * omc;
-		*this *= result;
-		return *this;
+		return result;
 	}
 
-	inline mat4 mat4::rotation (const float& angle, vec3 axis, const bool& normalized) {
+	inline mat4 mat4::scalation (const vec2& s) {
 		mat4 result(1.0f);
 
-		float c = cosf(angle * DEG_TO_RAD);
-		float s = sinf(angle * DEG_TO_RAD);
-		float omc = 1 - c;
+		result.elements[0] = s.x;
+		result.elements[5] = s.y;
 
-		if (!normalized)
-			axis.normalize();
-
-		result[0][0] = c + axis.x * axis.x * omc;
-		result[0][1] = axis.y * axis.x * omc + axis.z * s;
-		result[0][2] = axis.z * axis.x * omc - axis.y * s;
-
-		result[1][0] = axis.x * axis.y * omc - axis.z * s;
-		result[1][1] = c + axis.y * axis.y * omc;
-		result[1][2] = axis.z * axis.y * omc + axis.x * s;
-
-		result[2][0] = axis.x * axis.z * omc + axis.y * s;
-		result[2][1] = axis.y * axis.z * omc - axis.x * s;
-		result[2][2] = c + axis.z * axis.z * omc;
 		return result;
 	}
 
-	inline mat4 mat4::ortho(const float& left, const float& right, const float& top, const float& bottom, const float& zfar, const float& znear) {
-		mat4 result(1.0f);
+	inline mat4& mat4::translate (const vec2& p) { return *this *= mat4::translation(p); }
+	inline mat4& mat4::rotate (const float& angle) { return *this *= mat4::rotation(angle); }
+	inline mat4& mat4::scale (const vec2& s) { return *this *= mat4::scalation(s); }
 
-		result[0][0] = 2 / (right - left);
-		result[1][1] = 2 / (top - bottom);
-		result[2][2] = 2 / (znear - zfar);
-
-		result[3][0] = (right + left) / (left - right);
-		result[3][1] = (top + bottom) / (bottom - top);
-		result[3][2] = (zfar + znear) / (znear - zfar);
-		return result;
+	inline vec4 mat4::row (const int& index) const {
+		return vec4(elements[0 + index], elements[4 + index], elements[8 + index], elements[12 + index]);
 	}
 
-	inline void mat4::setColumn (const unsigned int& index, const vec4& column) {
-		this->columns[index] = column;
+	inline void mat4::setRow (const vec4& row, const int& index) {
+		elements[0 + index] = row.x;
+		elements[4 + index] = row.y;
+		elements[8 + index] = row.z;
+		elements[12 + index] = row.w;
 	}
 
-	inline void mat4::setRow(const unsigned int& index, const vec4& row) {
-		this->columns[0][index] = row.x;
-		this->columns[1][index] = row.y;
-		this->columns[2][index] = row.z;
-		this->columns[3][index] = row.w;
-	}
-
-	inline void mat4::print (std::ostream& os) const {
-		for (unsigned char i = 0; i < MAT4_DIMENSION; i++) {
-			vec4 row = this->row(i);
-			os << '\t' << row.x << ' ' << row.y << ' ' << row.z << ' ' << row.w << '\n';
-		}
-	}
-
-	inline vec4 operator* (const mat4& m, const vec4& v) {
-		vec4 result;
-		result.x = (m.row(0) * v).sum();
-		result.x = (m.row(1) * v).sum();
-		result.x = (m.row(2) * v).sum();
-		result.x = (m.row(3) * v).sum();
-		return result;
-	}
-
-	inline vec4 operator* (const vec4& v, const mat4& m) {
-		vec4 result;
-		result.x = (m.row(0) * v).sum();
-		result.x = (m.row(1) * v).sum();
-		result.x = (m.row(2) * v).sum();
-		result.x = (m.row(3) * v).sum();
-		return result;
-	}
-
-	inline vec4& operator*= (vec4& v, const mat4& m) {
-		v.x = (m.row(0) * v).sum();
-		v.x = (m.row(1) * v).sum();
-		v.x = (m.row(2) * v).sum();
-		v.x = (m.row(3) * v).sum();
-		return v;
-	}
-
-	inline std::ostream& operator<< (std::ostream& os, const mat4& m) {
-		for (unsigned char i = 0; i < MAT4_DIMENSION; i++) {
-			vec4 row = m.row(i);
-			os << '\t' << row.x << ' ' << row.y << ' ' << row.z << ' ' << row.w << '\n';
-		}
-		return os;
-	}
+	inline vec4& mat4::operator[] (const int& index) {	return columns[index]; }
+	inline vec4 mat4::operator[] (const int& index) const { return columns[index]; }
+	
 }
