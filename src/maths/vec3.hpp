@@ -45,6 +45,13 @@ namespace kekule {
 	}
 
 	template <typename T>
+	inline vector3<T>::operator std::string () const {
+		std::stringstream ss;
+		ss << "vec3(" << x << ", " << y << ", " << z << ")";
+		return ss.str();
+	}
+
+	template <typename T>
 	inline vector3<T> vector3<T>::operator+ (const vector3<T>& other) const {
 		vector3<T> result = *this;
 		return result += other;

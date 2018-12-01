@@ -31,6 +31,8 @@ namespace kekule {
 		template <typename N>
 		operator vector4<N> () const;
 
+		operator std::string () const;
+
 		vector2<T> operator+ (const vector2<T>& other) const;
 		vector2<T>& operator+= (const vector2<T>& other);
 		vector2<T> operator+ (const T& scalar) const;

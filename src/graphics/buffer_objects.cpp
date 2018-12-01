@@ -103,7 +103,7 @@ namespace kekule {
 
 	void VertexBuffer::setSubData (const uint& offset, const uint& vertCount, const float* data) {
 		if (mRef == nullptr) {
-			logError("[kekule_engine] Calling VertexBuffer::setSubData() for uninitialized instance");
+			LOGE <<"[kekule_engine] Calling VertexBuffer::setSubData() for uninitialized instance\n";
 			return;
 		}
 		GL(glBindBuffer(GL_ARRAY_BUFFER, mRef->id));

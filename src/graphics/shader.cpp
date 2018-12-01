@@ -109,7 +109,7 @@ namespace kekule {
 			read_file(vertpath, vertsrc);
 			read_file(fragpath, fragsrc);
 		} catch (KekuleException e) {
-			logError(e.what());
+			LOGE << e.what() << '\n';
 			return;
 		}
 		mRef = new shader(vertsrc, nullptr, fragsrc, name);
@@ -128,8 +128,8 @@ namespace kekule {
 			read_file(geomtrpath, geomtrsrc);
 			read_file(fragpath, fragsrc);
 		} catch (KekuleException e) {
-			logError("Can't create shader:");
-			logError(e.what());
+			LOGE << "Can't create shader:\n";
+			LOGE << e.what() << '\n';
 			return;
 		}
 		mRef = new shader(vertsrc, geomtrsrc, fragsrc, name);

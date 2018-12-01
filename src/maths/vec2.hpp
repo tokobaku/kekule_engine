@@ -1,5 +1,7 @@
 #pragma once
 
+#include <sstream>
+
 namespace kekule {
 
 	template <typename T>
@@ -36,6 +38,13 @@ namespace kekule {
 	template <typename N>
 	inline vector2<T>::operator vector4<N> () const {
 		return vector4<N> ((N)x, (N)y, (N)0, (N)0);
+	}
+	
+	template <typename T>
+	inline vector2<T>::operator std::string () const {
+		std::stringstream ss;
+		ss << "vec2(" << x << ", " << y << ")";
+		return ss.str();
 	}
 
 	template <typename T>

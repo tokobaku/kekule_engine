@@ -1,47 +1,37 @@
 #pragma once
 
-#ifdef _WIN32
-#include <Windows.h>
-#endif
-#include <initializer_list>
 #include <iostream>
 
+#define KEKULE_WHITE 0
+#define KEKULE_YELLOW 1
+#define KEKULE_RED 2
+
+#define LOGI 	::kekule::setConsoleColors(KEKULE_WHITE); ::std::cout
+#define LOGW 	::kekule::setConsoleColors(KEKULE_YELLOW); ::std::cout
+#define LOGE 	::kekule::setConsoleColors(KEKULE_RED); ::std::cout
+
 namespace kekule {
+	void setConsoleColors(const char& c);
 
-	//display message in white text ('std::cout <<' operator must be overloaded for type T)
 	template <typename T>
-	void logInfo (const T& message) {
-#ifdef _WIN32
-		static HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
-		SetConsoleTextAttribute(h, 15);
-#endif
-		std::cout << message << '\n';
+	inline std::ostream& logInfo (const T& message) {
+		LOGI << message << '\n';
+		return std::cout;
 	}
 
-	//display message in yellow text ('std::cout <<' operator must be overloaded for type T)
 	template <typename T>
-	void logWarning (const T& message) {
-#ifdef _WIN32
-		static HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
-		SetConsoleTextAttribute(h, 14);
-#endif
-		std::cout << message << '\n';
-#ifdef _WIN32	//reset text colors
-		SetConsoleTextAttribute(h, 15);
-#endif
+	inline std::ostream& logWarning (const T& message) {
+		LOGW << message << '\n';
+		return std::cout;
 	}
 
-	//display message in red text ('std::cout <<' operator must be overloaded for type T)
 	template <typename T>
-	void logError (const T& message) {
-#ifdef _WIN32
-		static HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
-		SetConsoleTextAttribute(h, 12);
-#endif
-		std::cout << message << '\n';
-#ifdef _WIN32	//reset text colors
-		SetConsoleTextAttribute(h, 15);
-#endif
+	inline std::ostream& logError (const T& message) {
+		LOGE << message;
+		return std::cout;
 	}
 
+	std::ostream& logI ();
+	std::ostream& logW ();
+	std::ostream& logE ();
 }

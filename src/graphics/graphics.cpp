@@ -131,7 +131,7 @@ namespace kekule {
 			GL(glDrawArrays(GL_LINE_LOOP, 0, 3));
 			break;
 		default:
-			logError("[kekule_engine] invalid draw mode for Triangle");
+			LOGE << "[kekule_engine] invalid draw mode for Triangle\n";
 		}
 	}
 
@@ -213,7 +213,7 @@ namespace kekule {
 			GL(glPolygonMode(GL_FRONT_AND_BACK, GL_FILL));
 			break;
 		default:
-			logError("[kekule_engine] invalid draw mode for Rect");
+			LOGE << "[kekule_engine] invalid draw mode for Rect\n";
 		}
 	}
 	

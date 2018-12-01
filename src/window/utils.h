@@ -4,7 +4,7 @@
 #include "logging.h"
 #include <fstream>
 #include <exception>
-#include <string>
+#include <string.h>
 
 namespace kekule {
 
@@ -47,11 +47,7 @@ namespace kekule {
 	typedef unsigned int uint;
 
 	inline void logGlError (const int& line, const char* linestr, const char* filestr, const int& err) {
-		logError("------------[OpenGL] error------------");
-		logError(line);
-		logError(linestr);
-		logError(filestr);
-		logError(err);
+		LOGE << "[OpenGL] error: in file " << filestr << ", at line " << line << ", error code: " << err << '\n';
 	}
 
 #ifdef KEKULE_DEBUG

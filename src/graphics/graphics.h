@@ -78,5 +78,9 @@ namespace kekule {
 		void render (const int& layer) const;
 		void render (const unsigned char& mode, const int& layer) const;
 	};
+
+	class Polygon : public IRenderable {
+		
+	};
 	
 }

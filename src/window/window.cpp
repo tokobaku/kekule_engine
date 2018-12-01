@@ -26,7 +26,7 @@ namespace kekule {
 		mHeight = height;
 		mTitle = title;
 		if (glfwInit() != GLFW_TRUE) {
-			logError("[GLFW] failed to initialize GLFW");
+			LOGE << "[GLFW] failed to initialize GLFW\n";
 			getchar();
 			Window::exit(1);
 		}
@@ -36,7 +36,7 @@ namespace kekule {
 		glfwMakeContextCurrent(mWindow);
 
 		if (glewInit() != GLEW_OK) {
-			logError("[GLEW] failed to initialize GLEW");
+			LOGE << "[GLEW] failed to initialize GLEW\n";
 			getchar();
 			Window::exit(1);
 		}

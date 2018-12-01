@@ -31,7 +31,7 @@ int main () {
 		t += dt;
 		frames++;
 		if (t >= 1.0f) {
-			logInfo(frames);
+			LOGI << frames << '\n';
 			t = 0.0f;
 			frames = 0;
 		}
