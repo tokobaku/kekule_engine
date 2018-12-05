@@ -9,6 +9,7 @@ namespace kekule {
 
 	class Window {
 	private:
+		static void* handle;
 		static GLFWwindow* mWindow;
 		static int mWidth, mHeight, mPosX, mPosY;
 		static std::string mTitle;
@@ -25,6 +26,7 @@ namespace kekule {
 
 		static void start ();
 		static void exit (int code = 0);
+		static void cleanup ();
 		static int exitCode ();
 
 		static int width ();

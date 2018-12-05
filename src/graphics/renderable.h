@@ -2,10 +2,6 @@
 
 #include "buffer_objects.h"
 
-#define KEKULE_FILL			0
-#define KEKULE_LINE			1
-#define KEKULE_WIREFRAME	3
-
 namespace kekule {
 
 	class IRenderable {

@@ -4,6 +4,10 @@
 #include "../maths/kmath.h"
 #include "renderable.h"
 
+#define KEKULE_FILL			0
+#define KEKULE_LINE 		1
+#define KEKULE_WIREFRAME	2
+
 namespace kekule {
 
 	class Line : public IRenderable {
@@ -57,8 +61,8 @@ namespace kekule {
 	protected:
 		void glRender () const override;
 
-		mutable VertexBuffer mVbo;
-		mutable VertexArray mVao;
+		static VertexBuffer mVbo;
+		static VertexArray mVao;
 	public:
 		vec2 pos;
 		float width, height;
@@ -77,10 +81,6 @@ namespace kekule {
 		void render () const;
 		void render (const int& layer) const;
 		void render (const unsigned char& mode, const int& layer) const;
-	};
-
-	class Polygon : public IRenderable {
-		
 	};
 	
 }

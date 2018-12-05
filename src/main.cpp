@@ -11,21 +11,23 @@
 #include "graphics/graphics.h"
 #include "graphics/renderable.h"
 #include "graphics/camera.h"
+#include <random>
 
 using namespace kekule;
 
-Rect r;
+Rect r[2500];
 
 int main () {
 	Window::init();
-	r = Rect(vec2(Window::width() / 2, Window::height() / 2) - 50.0f, 100.0f, 100.0f);
+	for (int i = 0; i < 2500; ++i)
+		r[i] = Rect(vec2(rand() % 640, rand() % 480), 10, 10, Color(rand() % 255, rand() % 255, rand() % 255));
 	Window::setOnDraw([]() {
-		r.render();
+		for (int i = 0; i < 2500; ++i)
+			r[i].render();
 		if (getKey(INPUT_ESCAPE))
 			Window::exit();
 	});
 	Window::setOnUpdate([](float dt) {
-		r.angle += dt * 100.0f;
 		static float t = 0.0f;
 		static int frames = 0;
 		t += dt;
@@ -37,5 +39,6 @@ int main () {
 		}
 	});
 	Window::start();
+	Window::cleanup();
 	return Window::exitCode();
 }

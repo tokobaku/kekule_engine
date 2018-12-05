@@ -116,7 +116,7 @@ namespace kekule {
 	}
 
 	uint VertexBuffer::vertSize () const { return mRef == nullptr ? 0 : mRef->vertSize; }
-	uint VertexBuffer::vertCount () const { return mRef == nullptr ? 0 : mRef->refCount; }
+	uint VertexBuffer::vertCount () const { return mRef == nullptr ? 0 : mRef->vertCount; }
 
 	VertexBuffer VertexBuffer::clone () const {
 		if (mRef == nullptr)
@@ -243,9 +243,7 @@ namespace kekule {
 		this->setSubData(offset, data.size(), data.begin());
 	}
 
-	uint IndexBuffer::indCount () const {
-		return mRef == nullptr ? 0 : mRef->indCount;
-	}
+	uint IndexBuffer::indCount () const { return mRef == nullptr ? 0 : mRef->indCount; }
 
 	IndexBuffer IndexBuffer::clone () const {
 		if (mRef == nullptr)

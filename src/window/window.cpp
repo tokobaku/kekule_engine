@@ -5,11 +5,13 @@
 #include "../graphics/renderer.h"
 #include "../graphics/shader.h"
 #include "../graphics/camera.h"
+#include <windows.h>
 
 #include <chrono>
 
 namespace kekule {
 
+	void* Window::handle;
 	GLFWwindow* Window::mWindow;
 	int Window::mWidth, Window::mHeight, Window::mPosX, Window::mPosY;
 	std::string Window::mTitle;
@@ -49,6 +51,8 @@ namespace kekule {
 		glfwSetMouseButtonCallback(mWindow, Input::glfw_mouse_btn_callback);
 		glfwSetCursorPosCallback(mWindow, Input::glfw_mouse_pos_callback);
 		glfwSetScrollCallback(mWindow, Input::glfw_mouse_scroll_callback);
+
+		handle = GetStdHandle(STD_OUTPUT_HANDLE);
 	}
 
 	void Window::init (int width, int height, const std::string& title, int xpos, int ypos) {
@@ -88,6 +92,10 @@ namespace kekule {
 			Input::mDealWithReleasedBtns();
 			Input::mDealWithReleasedKeys();
 		}
+	}
+
+	void Window::cleanup () {
+		SetConsoleTextAttribute(handle, STD_OUTPUT_HANDLE);
 	}
 
 	int Window::exitCode () { return mExitCode; }

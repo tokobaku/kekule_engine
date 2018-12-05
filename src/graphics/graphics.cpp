@@ -85,8 +85,8 @@ namespace kekule {
 		,pivot(other.pivot)
 		,angle(other.angle)
 	{
-		mVbo.setData(2, {p1.x, p1.y, p2.x, p2.y, p3.x, p3.y});
 		mVao.bind();
+		mVbo.setData(2, {p1.x, p1.y, p2.x, p2.y, p3.x, p3.y});
 		mVao.specifyLayout(0, 2, 2, 0);
 	}
 	
@@ -135,17 +135,21 @@ namespace kekule {
 		}
 	}
 
+	VertexBuffer Rect::mVbo;
+	VertexArray Rect::mVao;
+
 	Rect::Rect ()
 		:pos(0.0f), width(0.0f), height(0.0f), color(0), mode(0), pivot(0.0f), angle(0.0f) {}
 	
 	Rect::Rect (const vec2& pos, const float& width, const float& height, const Color& c)
 		:pos(pos), width(width), height(height), color(c), mode(0), angle(0.0f)
 	{
+		if (mVao == nullptr) {
+			mVao.bind();
+			mVbo.setData(2, {0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f});
+			mVao.specifyLayout(0, 2, 2, 0);
+		}
 		pivot = pos + vec2(width/2, height/2);
-		mVao.bind();
-		mVbo.setData(2, {pos.x, pos.y, pos.x + width, pos.y,
-						pos.x + width, pos.y + height, pos.x, pos.y + height});
-		mVao.specifyLayout(0, 2, 2, 0);
 	}
 
 	Rect::Rect (const Rect& other)
@@ -156,14 +160,7 @@ namespace kekule {
 		,color(other.color)
 		,mode(other.mode)
 		,pivot(other.pivot)
-		,angle(other.angle)
-	{
-		mVao.bind();
-		mVao.bind();
-		mVbo.setData(2, {pos.x, pos.y, pos.x + width, pos.y,
-						pos.x + width, pos.y + height, pos.x, pos.y + height});
-		mVao.specifyLayout(0, 2, 2, 0);
-	}
+		,angle(other.angle) {}
 
 	Rect::~Rect () {}
 
@@ -176,10 +173,6 @@ namespace kekule {
 		mode = other.mode;
 		pivot = other.pivot;
 		angle = other.angle;
-		mVao.bind();
-		mVbo.setData(2, {pos.x, pos.y, pos.x + width, pos.y,
-						pos.x + width, pos.y + height, pos.x, pos.y + height});
-		mVao.specifyLayout(0, 2, 2, 0);
 		return *this;
 	}
 
@@ -191,14 +184,15 @@ namespace kekule {
 	}
 
 	void Rect::glRender () const {
-		mVbo.setSubData(0, {pos.x, pos.y, pos.x + width, pos.y,
-						pos.x + width, pos.y + height, pos.x, pos.y + height});
 		mVao.bind();
 		Shader::simple().bind();
 		Shader::simple().setUniform("color", color.toVec4());
-		mat4 model = mat4::translation(pivot);
+		mat4 model(1.0f);
+		model.translate(pivot);
 		model.rotate(angle);
 		model.translate(-pivot);
+		model.translate(pos);
+		model.scale({width, height});
 		Shader::simple().setUniformMat4("model", model);
 		switch (mode) {
 		case KEKULE_FILL:
@@ -213,7 +207,7 @@ namespace kekule {
 			GL(glPolygonMode(GL_FRONT_AND_BACK, GL_FILL));
 			break;
 		default:
-			LOGE << "[kekule_engine] invalid draw mode for Rect\n";
+			logError("[kekule_engine] invalid draw mode for Rect");
 		}
 	}
 	

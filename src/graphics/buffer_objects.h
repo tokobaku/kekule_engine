@@ -63,8 +63,8 @@ namespace kekule {
 		};
 
 		void removeRef () const;
-		mutable index_buffer* mRef;
 	public:
+		mutable index_buffer* mRef;
 		IndexBuffer ();
 		IndexBuffer (const uint& indCount, const uint* data);
 		IndexBuffer (std::initializer_list<uint> data);
