@@ -118,20 +118,23 @@ namespace kekule {
 	uint VertexBuffer::vertSize () const { return mRef == nullptr ? 0 : mRef->vertSize; }
 	uint VertexBuffer::vertCount () const { return mRef == nullptr ? 0 : mRef->vertCount; }
 
-	VertexBuffer VertexBuffer::clone () const {
-		if (mRef == nullptr)
-			return *this;
+	void VertexBuffer::clone (const VertexBuffer& src, VertexBuffer& dest) {
+		if (!src) {
+			dest = nullptr;
+			return;
+		}
 		
-		VertexBuffer vbo;
-		vbo.mRef = new vertex_buffer();
-		glGenBuffers(1, &vbo.mRef->id);
-		glBindBuffer(GL_ARRAY_BUFFER, vbo.mRef->id);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * mRef->refCount * mRef->vertSize, 0, GL_STATIC_DRAW);
-		glBindBuffer(GL_COPY_READ_BUFFER, mRef->id);
-		glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_ARRAY_BUFFER, 0, 0, sizeof(float) * mRef->vertCount * mRef->vertSize);
-		vbo.mRef->vertSize = mRef->vertSize;
-		vbo.mRef->vertCount = mRef->vertCount;
-		return vbo;
+		if (dest == nullptr)
+			dest.mRef = new VertexBuffer::vertex_buffer();
+		glGenBuffers(1, &dest.mRef->id);
+		glBindBuffer(GL_ARRAY_BUFFER, dest.mRef->id);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * src.mRef->vertCount * src.mRef->vertSize, 0, GL_STATIC_DRAW);
+	
+		glBindBuffer(GL_COPY_READ_BUFFER, src.mRef->id);
+	
+		glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_ARRAY_BUFFER, 0, 0, sizeof(float) * src.mRef->vertCount * src.mRef->vertSize);
+		dest.mRef->vertCount = src.mRef->vertCount;
+		dest.mRef->vertSize = src.mRef->vertSize;
 	}
 
 	IndexBuffer::index_buffer::index_buffer ()
@@ -245,18 +248,22 @@ namespace kekule {
 
 	uint IndexBuffer::indCount () const { return mRef == nullptr ? 0 : mRef->indCount; }
 
-	IndexBuffer IndexBuffer::clone () const {
-		if (mRef == nullptr)
-			return nullptr;
+	void IndexBuffer::clone (const IndexBuffer& src, IndexBuffer& dest) {
+		if (!src) {
+			dest = nullptr;
+			return;
+		}
 		
-		IndexBuffer vbo;
-		vbo.mRef = new index_buffer();
-		GL(glGenBuffers(1, &vbo.mRef->id));
-		GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo.mRef->id));
-		GL(glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint) * mRef->indCount, nullptr, GL_STATIC_DRAW));
-		GL(glBindBuffer(GL_COPY_READ_BUFFER, mRef->id));
-		GL(glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_ELEMENT_ARRAY_BUFFER, 0, 0, mRef->indCount * sizeof(uint)));
-		return vbo;
+		if (dest == nullptr)
+			dest.mRef = new index_buffer();
+		glGenBuffers(1, &dest.mRef->id);
+		glBindBuffer(GL_ARRAY_BUFFER, dest.mRef->id);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * src.mRef->indCount, 0, GL_STATIC_DRAW);
+	
+		glBindBuffer(GL_COPY_READ_BUFFER, src.mRef->id);
+	
+		glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_ARRAY_BUFFER, 0, 0, sizeof(float) * src.mRef->indCount);
+		dest.mRef->indCount = src.mRef->indCount;
 	}
 
 	VertexArray::vertex_array::vertex_array ()

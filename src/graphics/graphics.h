@@ -3,6 +3,7 @@
 #include "buffer_objects.h"
 #include "../maths/kmath.h"
 #include "renderable.h"
+#include <vector>
 
 #define KEKULE_FILL			0
 #define KEKULE_LINE 		1
@@ -81,6 +82,39 @@ namespace kekule {
 		void render () const;
 		void render (const int& layer) const;
 		void render (const unsigned char& mode, const int& layer) const;
+	};
+
+	//TODO: Allow user to pass gl draw modes (like GL_TRIANGLES, GL_LINES, etc.)
+	class Polygon : public IRenderable {
+	protected:
+		void glRender () const override;
+
+		mutable VertexBuffer mVbo;
+		mutable IndexBuffer mIbo;
+		mutable VertexArray mVao;
+	public:
+		Color color;
+		vec2 pos;
+		vec2 pivot;
+		float angle;
+		vec2 scale;
+		std::vector<float> verts;
+		std::vector<uint> inds;
+		mutable unsigned char mode;
+	
+		Polygon ();
+		Polygon (std::initializer_list<float> verts, std::initializer_list<uint> inds = {}, const Color& c = Color(255));
+		Polygon (const uint& vertCount, const float* vertData, const uint& indCount = 0, const uint* indData = nullptr, const Color& c = Color(255));
+		Polygon (const Polygon& other);
+		~Polygon ();
+
+		Polygon& operator= (const Polygon& other);
+
+		void render () const;
+		void render (const int& layer) const;
+		void render (const unsigned char& mode, const int& layer) const;
+
+		void centerPivot ();
 	};
 	
 }

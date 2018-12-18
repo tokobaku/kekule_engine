@@ -115,7 +115,7 @@ namespace kekule {
 	}
 
 	void Triangle::glRender () const {
-		mVbo.setSubData(0, {p1.x, p1.y, p2.x, p2.y, p3.x, p3.y});
+		mVbo.setSubData(0, { p1.x, p1.y, p2.x, p2.y, p3.x, p3.y });
 		mVao.bind();
 		Shader::simple().bind();
 		Shader::simple().setUniform("color", color.toVec4());
@@ -208,6 +208,134 @@ namespace kekule {
 			break;
 		default:
 			logError("[kekule_engine] invalid draw mode for Rect");
+		}
+	}
+
+	Polygon::Polygon ()
+		:color(0), pos(0.0f), pivot(0.0f), angle(0.0f), scale(1.0f), mode(KEKULE_FILL) {}
+	
+	Polygon::Polygon (std::initializer_list<float> verts, std::initializer_list<uint> inds, const Color& c)
+		:color(c), pos(0.0f), pivot(0.0f), angle(0.0f), scale(1.0f), verts(verts), inds(inds), mode(KEKULE_FILL)
+	{
+		mVao.bind();
+		mVbo.setData(2, verts);
+		mIbo.setData(inds);
+		mVao.specifyLayout(0, 2, 2, 0);
+		centerPivot();
+	}
+
+	Polygon::Polygon (const uint& vertCount, const float* vertData, const uint& indCount, const uint* indData, const Color& c)
+		:color(c), pos(0.0f), pivot(0.0f), angle(0.0f), scale(1.0f), mode(KEKULE_FILL)
+	{
+		verts = {vertData, vertData + vertCount};
+		inds = {indData, indData + indCount};
+		mVao.bind();
+		mVbo.setData(2, vertCount, (const float*)vertData);
+		mIbo.setData(indCount, indData);
+		mVao.specifyLayout(0, 2, 2, 0);
+	}
+
+	Polygon::Polygon (const Polygon& other)
+		:IRenderable(other.layer)
+		,color(other.color)
+		,pos(other.pos)
+		,pivot(other.pivot)
+		,angle(other.angle)
+		,scale(other.scale)
+		,verts(other.verts)
+		,inds(other.inds)
+		,mode(other.mode)
+	{
+		VertexBuffer::clone(other.mVbo, mVbo);
+		IndexBuffer::clone(other.mIbo, mIbo);
+		mVao.bind();
+		mVbo.bind();
+		mIbo.bind();
+		mVao.specifyLayout(0, 2, 2, 0);
+	}
+
+	Polygon::~Polygon () {}
+
+	Polygon& Polygon::operator= (const Polygon& other) {
+		layer = other.layer;
+		color = other.color;
+		pos = other.pos;
+		pivot = other.pivot;
+		angle = other.angle;
+		scale = other.scale;
+		verts = other.verts;
+		inds = other.inds;
+		verts = other.verts;
+		inds = other.inds;
+		mode = other.mode;
+		VertexBuffer::clone(other.mVbo, mVbo);
+		IndexBuffer::clone(other.mIbo, mIbo);
+		mVao.bind();
+		mVbo.bind();
+		mIbo.bind();
+		mVao.specifyLayout(0, 2, 2, 0);
+		return *this;
+	}
+
+	void Polygon::render () const { IRenderable::render(); }
+	void Polygon::render (const int& layer) const { IRenderable::render(layer); }
+	void Polygon::render (const unsigned char& mode, const int& layer) const {
+		this->mode = mode;
+		IRenderable::render(layer);
+	}
+
+	void Polygon::centerPivot () {
+		pivot = 0.0f;
+		for (int i = 0; i < verts.size(); ++i)
+			pivot += vec2(verts[i], verts[++i]);
+		pivot /= verts.size() / 2;
+	}
+
+	void Polygon::glRender () const {
+		if (mVbo.vertCount() == verts.size() / 2)
+			mVbo.setSubData(0, verts.size(), verts.data());
+		else
+			mVbo.setData(2, verts.size() / 2, verts.data());
+		if (mIbo.indCount() == inds.size() / 2)
+			mIbo.setSubData(0, inds.size(), inds.data());
+		else
+			mIbo.setData(inds.size(), inds.data());
+		mVao.bind();
+		Shader::simple().bind();
+		Shader::simple().setUniform("color", color.toVec4());
+		mat4 model(1.0f);
+		model.translate(pivot);
+		model.rotate(angle);
+		model.translate(-pivot);
+		model.translate(pos);
+		model.scale(scale);
+		Shader::simple().setUniformMat4("model", model);
+		switch (mode) {
+		case KEKULE_FILL:
+			if (mIbo.indCount()) {
+				GL(glDrawElements(GL_TRIANGLES, mIbo.indCount(), GL_UNSIGNED_INT, 0));
+			} else {
+				GL(glDrawArrays(GL_TRIANGLES, 0, mVbo.vertCount()));
+			}
+			break;
+		case KEKULE_LINE:
+			if (mIbo.indCount()) {
+				GL(glDrawElements(GL_TRIANGLES, mIbo.indCount(), GL_UNSIGNED_INT, 0));
+			} else {
+				GL(glDrawArrays(GL_LINES, 0, mVbo.vertCount()));
+			}
+			break;
+		case KEKULE_WIREFRAME:
+			GL(glPolygonMode(GL_FRONT_AND_BACK, GL_LINE));
+			if (mIbo.indCount()) {
+				GL(glDrawElements(GL_TRIANGLES, mIbo.indCount(), GL_UNSIGNED_INT, 0));
+			} else {
+				GL(glDrawArrays(GL_TRIANGLES, 0, mVbo.vertCount()));
+			}
+			GL(glPolygonMode(GL_FRONT_AND_BACK, GL_FILL));
+			break;
+		default:
+			logError("[kekule_engine] invalid draw mode for Polygon");
 		}
 	}
 	

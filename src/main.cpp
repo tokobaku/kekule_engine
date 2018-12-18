@@ -15,15 +15,19 @@
 
 using namespace kekule;
 
-Rect r[2500];
+Polygon p;
 
 int main () {
 	Window::init();
-	for (int i = 0; i < 2500; ++i)
-		r[i] = Rect(vec2(rand() % 640, rand() % 480), 10, 10, Color(rand() % 255, rand() % 255, rand() % 255));
+	p = Polygon({0.0f, 0.0f, 100.0f, 0.0f, 100.0f, 100.0f, 0.0f, 100.0f});
+	p.color = Color(255);
+	p.mode = KEKULE_WIREFRAME;
 	Window::setOnDraw([]() {
-		for (int i = 0; i < 2500; ++i)
-			r[i].render();
+		p.render();
+		if (getKeyDown(INPUT_SPACE)) {
+			p.verts.push_back(rand() % 640);
+			p.verts.push_back(rand() % 480);
+		}
 		if (getKey(INPUT_ESCAPE))
 			Window::exit();
 	});
@@ -40,5 +44,5 @@ int main () {
 	});
 	Window::start();
 	Window::cleanup();
-	return Window::exitCode();
+	return Window::exitCode();   
 }

@@ -16,7 +16,7 @@ namespace kekule {
 			vertex_buffer (const uint& vertSize, std::initializer_list<float> data);
 			~vertex_buffer ();
 		};
-		
+		public:
 		mutable vertex_buffer* mRef;
 
 		void removeRef () const;
@@ -46,7 +46,7 @@ namespace kekule {
 		void setSubData (const uint& offset, std::initializer_list<float> data);
 		uint vertSize () const;
 		uint vertCount () const;
-		VertexBuffer clone () const;
+		static void clone (const VertexBuffer& src, VertexBuffer& dest);
 	};
 
 	class IndexBuffer {
@@ -89,7 +89,7 @@ namespace kekule {
 		void setSubData (const uint& offset, const uint& indCount, const uint* data);
 		void setSubData (const uint& offset, std::initializer_list<uint> data);
 		uint indCount () const;
-		IndexBuffer clone () const;
+		static void clone (const IndexBuffer& src, IndexBuffer& dest);
 	};
 
 	class VertexArray {

@@ -12,6 +12,7 @@
 namespace kekule {
 
 	void* Window::handle;
+	void* Window::csbi;
 	GLFWwindow* Window::mWindow;
 	int Window::mWidth, Window::mHeight, Window::mPosX, Window::mPosY;
 	std::string Window::mTitle;
@@ -53,6 +54,8 @@ namespace kekule {
 		glfwSetScrollCallback(mWindow, Input::glfw_mouse_scroll_callback);
 
 		handle = GetStdHandle(STD_OUTPUT_HANDLE);
+		csbi = new CONSOLE_SCREEN_BUFFER_INFO();
+		GetConsoleScreenBufferInfo(handle, (CONSOLE_SCREEN_BUFFER_INFO*)csbi);
 	}
 
 	void Window::init (int width, int height, const std::string& title, int xpos, int ypos) {
@@ -95,7 +98,7 @@ namespace kekule {
 	}
 
 	void Window::cleanup () {
-		SetConsoleTextAttribute(handle, STD_OUTPUT_HANDLE);
+		SetConsoleTextAttribute(handle, ((CONSOLE_SCREEN_BUFFER_INFO*)csbi)->wAttributes);
 	}
 
 	int Window::exitCode () { return mExitCode; }
