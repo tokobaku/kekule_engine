@@ -20,7 +20,7 @@ Polygon p;
 int main () {
 	Window::init();
 	p = Polygon({0.0f, 0.0f, 100.0f, 0.0f, 100.0f, 100.0f, 0.0f, 100.0f});
-	p.color = Color(255);
+	p.color = Color(255, 255, 0);
 	p.mode = KEKULE_WIREFRAME;
 	Window::setOnDraw([]() {
 		p.render();

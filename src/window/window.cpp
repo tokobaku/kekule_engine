@@ -5,14 +5,16 @@
 #include "../graphics/renderer.h"
 #include "../graphics/shader.h"
 #include "../graphics/camera.h"
+#ifdef _WIN32
 #include <windows.h>
-
-#include <chrono>
+#endif
 
 namespace kekule {
 
+#ifdef _WIN32
 	void* Window::handle;
 	void* Window::csbi;
+#endif
 	GLFWwindow* Window::mWindow;
 	int Window::mWidth, Window::mHeight, Window::mPosX, Window::mPosY;
 	std::string Window::mTitle;
@@ -53,9 +55,11 @@ namespace kekule {
 		glfwSetCursorPosCallback(mWindow, Input::glfw_mouse_pos_callback);
 		glfwSetScrollCallback(mWindow, Input::glfw_mouse_scroll_callback);
 
+#ifdef _WIN32
 		handle = GetStdHandle(STD_OUTPUT_HANDLE);
 		csbi = new CONSOLE_SCREEN_BUFFER_INFO();
 		GetConsoleScreenBufferInfo(handle, (CONSOLE_SCREEN_BUFFER_INFO*)csbi);
+#endif
 	}
 
 	void Window::init (int width, int height, const std::string& title, int xpos, int ypos) {
@@ -98,7 +102,11 @@ namespace kekule {
 	}
 
 	void Window::cleanup () {
+#ifdef _WIN32
 		SetConsoleTextAttribute(handle, ((CONSOLE_SCREEN_BUFFER_INFO*)csbi)->wAttributes);
+#elif __linux__
+		std::cout << "\e[0m";	//resets all attributes
+#endif
 	}
 
 	int Window::exitCode () { return mExitCode; }

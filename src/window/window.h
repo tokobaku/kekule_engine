@@ -9,8 +9,10 @@ namespace kekule {
 
 	class Window {
 	private:
+#ifdef _WIN32
 		static void* handle;
 		static void* csbi;
+#endif
 		static GLFWwindow* mWindow;
 		static int mWidth, mHeight, mPosX, mPosY;
 		static std::string mTitle;
