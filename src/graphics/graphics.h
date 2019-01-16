@@ -23,6 +23,7 @@ namespace kekule {
 		Color color;
 		float width;
 		vec2 pivot;
+		vec2 scale;
 		float angle;
 		
 		Line ();
@@ -31,6 +32,31 @@ namespace kekule {
 		virtual ~Line ();
 
 		Line& operator= (const Line& other);
+	};
+
+	class PolyLine : public IRenderable {
+	protected:
+		void glRender () const override;
+
+		mutable VertexBuffer mVbo;
+		mutable VertexArray mVao;
+	public:
+		std::vector<vec2> verts;
+		vec2 pos;
+		vec2 scale;
+		vec2 pivot;
+		Color color;
+		float angle;
+		float width;
+
+		PolyLine ();
+		PolyLine (const std::vector<float>& verts, const Color& color = Color(255));
+		PolyLine (const PolyLine& other);
+		~PolyLine ();
+
+		PolyLine& operator= (const PolyLine& other);
+		
+		void centerPivot ();
 	};
 
 	class Triangle : public IRenderable {
@@ -44,6 +70,8 @@ namespace kekule {
 		Color color;
 		mutable unsigned char mode;		//KEKULE_FILL, KEKULE_LINE, KEKULE_WIREFRAME
 		vec2 pivot;
+		vec2 scale;
+		vec2 pos;
 		float angle;
 
 		Triangle ();
@@ -115,6 +143,39 @@ namespace kekule {
 		void render (const unsigned char& mode, const int& layer) const;
 
 		void centerPivot ();
+	};
+
+	class Circle : public IRenderable {
+	protected:
+		void glRender () const override;
+	
+		mutable VertexBuffer mVbo;
+		mutable VertexArray mVao;
+
+		void genVerts () const;
+	public:
+		float radius;
+		uint details;
+		vec2 pos;
+		vec2 pivot;
+		vec2 scale;
+		float angle;
+		Color color;
+		float lineWidth;
+		mutable unsigned char mode;
+
+		Circle ();
+		Circle (const vec2& pos, const float& radius, const Color& c = Color(255), const uint& details = 20);
+		Circle (const Circle& other);
+		~Circle();
+
+		Circle& operator= (const Circle& other);
+
+		void centerPivot ();
+
+		void render () const;
+		void render (const int& layer) const;
+		void render (const unsigned char& mode, const int& layer) const;
 	};
 	
 }

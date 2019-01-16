@@ -15,19 +15,13 @@
 
 using namespace kekule;
 
-Polygon p;
+Circle c;
 
 int main () {
 	Window::init();
-	p = Polygon({0.0f, 0.0f, 100.0f, 0.0f, 100.0f, 100.0f, 0.0f, 100.0f});
-	p.color = Color(255, 255, 0);
-	p.mode = KEKULE_WIREFRAME;
+	c = Circle(100.0f, 40.0f);
 	Window::setOnDraw([]() {
-		p.render();
-		if (getKeyDown(INPUT_SPACE)) {
-			p.verts.push_back(rand() % 640);
-			p.verts.push_back(rand() % 480);
-		}
+		c.render();
 		if (getKey(INPUT_ESCAPE))
 			Window::exit();
 	});
@@ -44,5 +38,5 @@ int main () {
 	});
 	Window::start();
 	Window::cleanup();
-	return Window::exitCode();   
+	return Window::exitCode();
 }
