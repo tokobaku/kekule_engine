@@ -105,13 +105,10 @@ namespace kekule {
 		:mRef(nullptr)
 	{
 		char *vertsrc = nullptr, *fragsrc = nullptr;
-		try {
-			read_file(vertpath, vertsrc);
-			read_file(fragpath, fragsrc);
-		} catch (KekuleException e) {
-			LOGE << e.what() << '\n';
+		read_file(vertpath, vertsrc);
+		read_file(fragpath, fragsrc);
+		if (!fragsrc || !vertsrc)
 			return;
-		}
 		mRef = new shader(vertsrc, nullptr, fragsrc, name);
 		mRef->refCount++;
 
@@ -123,15 +120,13 @@ namespace kekule {
 		:mRef(nullptr)
 	{
 		char *vertsrc = nullptr, *geomtrsrc = nullptr, *fragsrc = nullptr;
-		try {
-			read_file(vertpath, vertsrc);
-			read_file(geomtrpath, geomtrsrc);
-			read_file(fragpath, fragsrc);
-		} catch (KekuleException e) {
-			LOGE << "Can't create shader:\n";
-			LOGE << e.what() << '\n';
+		read_file(vertpath, vertsrc);
+		read_file(geomtrpath, geomtrsrc);
+		read_file(fragpath, fragsrc);
+		
+		if (!vertsrc || !fragsrc || !geomtrsrc)
 			return;
-		}
+		
 		mRef = new shader(vertsrc, geomtrsrc, fragsrc, name);
 		mRef->refCount++;
 

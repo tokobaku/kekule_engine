@@ -3,6 +3,8 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "../maths/kmath.h"
+#include "input.h"
+#include "logging.h"
 #include <string>
 
 namespace kekule {

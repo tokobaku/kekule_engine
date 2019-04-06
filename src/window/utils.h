@@ -8,31 +8,12 @@
 
 namespace kekule {
 
-	class KekuleException : public std::exception {
-	private:
-		std::string mMessage;
-	public:
-		inline KekuleException () {}
-		
-		KekuleException (std::string& message)
-			:mMessage(message) {}
-
-		inline KekuleException (const KekuleException& other)
-			:mMessage(other.mMessage) {}
-
-		inline ~KekuleException () {}
-
-		inline const char* what () const noexcept override {
-			return mMessage.c_str();
-		}
-	};
-
-	inline void read_file (const char* path, char*& buffer) {
+	inline bool read_file (const char* path, char*& buffer) {
 		FILE* file = fopen(path, "rt");
 		if (!file) {
-			std::string message = "failed to open file ";
-			message += path;
-			throw KekuleException(message);
+			buffer = nullptr;
+			LOGE << "[kekule_engine] failed to open file: " << path << '\n';
+			return false;
 		}
 		fseek(file, 0, SEEK_END);
 		long size = ftell(file);
@@ -42,6 +23,7 @@ namespace kekule {
 		memset(buffer, 0, sizeof(char) * size);
 		fread(buffer, 1, size * sizeof(char), file);
 		fclose(file);
+		return true;
 	}
 
 	typedef unsigned int uint;

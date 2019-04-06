@@ -1,16 +1,8 @@
-#define GLEW_STATIC
-#include <GL/glew.h>
 #include "window/window.h"
-#include "window/logging.h"
-#include "window/input.h"
-#include <iostream>
 #include "maths/kmath.h"
-#include "graphics/shader.h"
-#include "graphics/buffer_objects.h"
-#include "graphics/renderable.h"
 #include "graphics/graphics.h"
-#include "graphics/renderable.h"
 #include "graphics/camera.h"
+#include <iostream>
 #include <random>
 
 using namespace kekule;
@@ -19,7 +11,7 @@ Circle c;
 
 int main () {
 	Window::init();
-	c = Circle(100.0f, 40.0f);
+	c = Circle(vec2(320.0f, 240.0f), 200.0f);
 	Window::setOnDraw([]() {
 		c.render();
 		if (getKey(INPUT_ESCAPE))

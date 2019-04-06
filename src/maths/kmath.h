@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <math.h>
 #define PI			3.14
 #define DEG_TO_RAD 3.14 / 180.
 #define RAD_TO_DEG 180.0 / 3.14

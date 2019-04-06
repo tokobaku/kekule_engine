@@ -110,6 +110,7 @@ namespace kekule {
 		mVao.bind();
 		mVbo.bind();
 		mVao.specifyLayout(0, 2, 2, 0);
+		return *this;
 	}
 
 	void PolyLine::centerPivot () {
@@ -508,6 +509,7 @@ namespace kekule {
 		mVao.bind();
 		mVbo.bind();
 		mVao.specifyLayout(0, 2, 2, 0);
+		return *this;
 	}
 
 	void Circle::centerPivot () {
@@ -555,14 +557,15 @@ namespace kekule {
 	void Circle::genVerts () const {
 		vec2* vertices = new vec2[details + 2];
 		vertices[0] = 0.0f;
-		for (uint i = 0; i <= details; ++i) {
+		for (uint i = 0; i < details; ++i) {
 			vec2 p = { cosf(2 * i * PI / details), sinf(2 * i * PI / details) };
 			vertices[i + 1] = { cosf(2 * i * PI / details), sinf(2 * i * PI / details) };
 		}
+		vertices[details + 1] = vertices[1];	//make sure that first and last vertices have same position
 		mVao.bind();
 		mVbo.setData(2, details + 2, (const float*)vertices);
 		mVao.specifyLayout(0, 2, 2, 0);
 		delete[] vertices;
 	}
-	
+
 }
