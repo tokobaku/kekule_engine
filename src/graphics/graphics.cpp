@@ -469,7 +469,7 @@ namespace kekule {
 		,pivot(pos)
 		,scale(1.0f)
 		,angle(0.0f)
-		,color(color)
+		,color(c)
 		,lineWidth(1.0f)
 		,mode(KEKULE_FILL)
 	{
