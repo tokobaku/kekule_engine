@@ -398,8 +398,10 @@ namespace kekule {
 
 	void Polygon::centerPivot () {
 		pivot = 0.0f;
-		for (int i = 0; i < verts.size(); ++i)
-			pivot += vec2(verts[i], verts[++i]);
+		for (unsigned int i = 0; i < verts.size(); ++i) {
+			pivot += vec2(verts[i], verts[i + 1]);
+			++i;
+		}
 		pivot /= verts.size() / 2;
 	}
 
